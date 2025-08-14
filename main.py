@@ -20,7 +20,7 @@ if not SUPABASE_URL or not SUPABASE_KEY or not ZAPI_TOKEN or not ZAPI_API_TOKEN:
 def send_message(name, phone_number):
     phone_number = str(phone_number).replace("+", "").replace(" ", "").replace("-", "")
     message = f"Ola {name}, tudo bem com voce?"
-    url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-text"
+    url = f"https://api.z-api.io/instances/{ZAPI_TOKEN}/token/{ZAPI_API_TOKEN}/send-text"
     headers = {
         "Authorization": f"Bearer {ZAPI_TOKEN}",
         "Content-Type": "application/json"
@@ -29,6 +29,15 @@ def send_message(name, phone_number):
         "phone_numer" : phone_number,
         "message" : message
     }
+
+    try:
+          print(f"Enviando mensagem para{name} ({phone_number})...")
+          response = requests.post(url, json=payload, headers=headers)
+          response.raise_for_status()
+          print(f"Mensagem enviada com sucesso para {name}")
+    except requests.exceptions.RequestException as e:
+          print(f"Erro ao enviar mensagem para {name}: {e}")
+          print(f"Detalhe da resposta: {response.text if 'response' in locals() else 'N/A'}") # type: ignore
     response = requests.post(url,json=payload, headers = headers)
     return response.json()
 
